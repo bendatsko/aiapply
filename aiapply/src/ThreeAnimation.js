@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   WebGLRenderer,
   Scene,
@@ -9,90 +9,116 @@ import {
   DirectionalLight,
   PlaneGeometry,
   ShadowMaterial,
-  Vector2,
-  Raycaster,
+  TextureLoader,
 } from 'three';
+import textureURL from './resume.png'; // Replace with the path to your texture
 
-function ThreeAnimation() {
-  const ref = useRef();
-  const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    const renderer = new WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setClearColor(0x000000, 0);
-    renderer.shadowMap.enabled = true;
-    renderer.setSize(ref.current.clientWidth, ref.current.clientHeight);
-    ref.current.appendChild(renderer.domElement);
+const Constants = {
+    CLEAR_COLOR: 0x000000,
+    CUBE_COLOR: 0xffffff,
+    LIGHT_COLOR: 0xffffff,
+    SHADOW_COLOR: 0x000000,
+  };
 
-    const scene = new Scene();
-    const camera = new PerspectiveCamera(75, ref.current.clientWidth / ref.current.clientHeight, 0.1, 1000);
 
-    const len = 11;
-    const wid = 8.5;
-    const ratio = 2;
-
-    const geometry = new BoxGeometry(wid / ratio, len / ratio, .25);
-    const material = new MeshStandardMaterial({ color: 0xffffff });
+  const Cube = () => {
+    const geometry = new BoxGeometry(4.25, 5.5, 0.07);
+    const loader = new TextureLoader();
+    const texture = loader.load(textureURL); // load the texture
+    const material = new MeshStandardMaterial({ map: texture }); // apply the texture
     const cube = new Mesh(geometry, material);
     cube.castShadow = true;
-    scene.add(cube);
-
-    const light = new DirectionalLight(0xffffff, 1);
-    light.position.set(5, 5, 5).normalize();
+    cube.position.x = -2;
+    return cube;
+  };
+  
+  
+  const Light = (cameraPosition) => {
+    const light = new DirectionalLight(Constants.LIGHT_COLOR, 1);
+    light.position.copy(cameraPosition);
     light.castShadow = true;
-    scene.add(light);
+    return light;
+  };
 
-    const shadowGeometry = new PlaneGeometry(2000, 2000);
-    const shadowMaterial = new ShadowMaterial({ transparent: true, opacity: 0.5 });
-    const shadowPlane = new Mesh(shadowGeometry, shadowMaterial);
-    shadowPlane.rotation.x = -Math.PI / 2;
-    shadowPlane.position.y = -2;
+  
+function ThreeAnimation() {
+  const ref = useRef();
+
+  useEffect(() => {
+    const initializeRenderer = () => {
+        const renderer = new WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setClearColor(Constants.CLEAR_COLOR, 0);
+        renderer.shadowMap.enabled = true;
+        renderer.setPixelRatio(window.devicePixelRatio); // Set to the device pixel ratio
+        const { clientWidth: width, clientHeight: height } = ref.current;
+        renderer.setSize(1.1* width * window.devicePixelRatio, 1.1* .75*height * window.devicePixelRatio); // Multiply by device pixel ratio
+        ref.current.appendChild(renderer.domElement);
+        return renderer;
+    };
+    
+
+    const initializeScene = () => new Scene();
+
+    const initializeCamera = () => {
+      const camera = new PerspectiveCamera(75, ref.current.clientWidth / ref.current.clientHeight, 0.1, 2000);
+      camera.position.z = 5;
+      return camera;
+    };
+
+ 
+
+    const renderer = initializeRenderer();
+    const scene = initializeScene();
+    const camera = initializeCamera();
+    const cube = Cube();
+    const light = Light(camera.position);
+    scene.add(cube, light);
+
+
+    // Only Shadow Plane is needed.
+    const shadowPlane = new Mesh(
+      new PlaneGeometry(100, 100),
+      new ShadowMaterial({ color: 0x000000 }) // ShadowMaterial is transparent by default
+    );
+    shadowPlane.rotation.x = - Math.PI / 2;
+    shadowPlane.position.y = -5;
     shadowPlane.receiveShadow = true;
     scene.add(shadowPlane);
 
-    camera.position.z = 5;
+const handleResize = () => {
+    const { clientWidth: width, clientHeight: height } = ref.current;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setPixelRatio(window.devicePixelRatio); // Update to the device pixel ratio on resize
+    renderer.setSize(width * window.devicePixelRatio, height * window.devicePixelRatio); // Multiply by device pixel ratio
+};
 
-    const raycaster = new Raycaster();
-    const mouse = new Vector2();
-
-    const handleMouseMove = (event) => {
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-      raycaster.setFromCamera(mouse, camera);
-      const intersects = raycaster.intersectObject(cube);
-      setIsHovered(intersects.length > 0);
-    };
-
-    const handleResize = () => {
-      const width = ref.current.clientWidth;
-      const height = ref.current.clientHeight;
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
-      renderer.setSize(width, height);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
+  
     window.addEventListener('resize', handleResize);
-
+    
+    cube.rotation.x -= 0.20;
+    cube.rotation.y -= 0.25;
+    
+    let time = 0;
+    
     const animate = () => {
       requestAnimationFrame(animate);
-      if (isHovered) cube.position.z -= 0.05;
-      else cube.position.z += (0 - cube.position.z) * 0.05;
+      light.position.copy(camera.position);
 
-      cube.rotation.x -= 0.001;
-      cube.rotation.y -= 0.001;
+      time += 0.01;
+      cube.position.y = Math.sin(time) * 0.25 + 0.25; // Adjusted to make sure cube doesn't go below shadowPlane
       renderer.render(scene, camera);
     };
-
+    
     animate();
-
+    
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
     };
   }, []);
-
+  
   return <div ref={ref} className="three-animation"></div>;
 }
 
