@@ -1,0 +1,6 @@
+openai
+pdflatex
+python-dotenv
+flask
+flask-cors
+pdf2image
