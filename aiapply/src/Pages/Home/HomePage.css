@@ -1,0 +1,75 @@
+.home-container {
+  font-family: 'Open Sans', sans-serif;
+  color: #333;
+}
+
+.banner {
+  background-color: #F8F9FA;
+  color: #333;
+  padding: 150px 0;
+}
+
+.banner-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.btn-accent {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.btn-accent:hover {
+  background-color: #d0d0d0;
+}
+
+.content-container, .team-container {
+  padding: 50px 0;
+}
+
+.row {
+  margin: 0 auto;
+  max-width: 960px;
+}
+
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: 0.3s;
+  border: none;
+  height: 100%;
+}
+
+.card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-img-top {
+  width: 100%;
+  height: auto;
+}
+
+.team-container {
+  background-color: #FFFFFF;
+}
+
+.footer {
+  background-color: #F8F9FA;
+  color: #333;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.footer a {
+  color: #333;
+  text-decoration: underline;
+}
+
+.footer a:hover {
+  color: #666666;
+}
+
+
