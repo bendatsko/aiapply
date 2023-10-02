@@ -30,7 +30,6 @@ def generate_resume():
         profile = data.get('profile')
         job = data.get('job')
         template = data.get('template')
-        additional_data = data.get('additional_data')  # Extract additional data
         print("Received user_id: ", user_id)
 
         messages = [
@@ -50,7 +49,6 @@ def generate_resume():
             'user_id': user_id,
             'latex_code': latex_code,
             'created_at': firestore.SERVER_TIMESTAMP,
-            'additional_data': additional_data  # Storing additional data to Firestore
         })
 
         # Return early after adding to Firestore
