@@ -1,0 +1,136 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item[$\circ$]\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+% RESUME STARTS HERE
+\begin{document}
+
+\begin{center}
+\textbf{\Huge \scshape Piss Fuck} \\ 
+\small 734-787-8832 $\mid$ \href{mailto:ryankima@umich.edu}{\underline{ryankima@umich.edu}} $\mid$ \href{https://linkedin.com/in/ryankima}{\underline{linkedin.com/in/ryankima}} $\mid$ \href{https://github.com/ryankima}{\underline{github.com/ryankima}}
+\end{center}
+
+% EDUCATION
+\section{Education}
+\resumeSubHeadingListStart
+\resumeSubheading
+{Michigan State University}{East Lansing, MI}
+{Bachelor of Science in Bartending, Minor in Being Unpleasant; GPA: 2.7}{Aug. 2021 - Present (Expected Graduation: May 2025)}
+\resumeItemListStart
+\resumeItem{Coursework: Food and Beverage Management, Mixology, Customer Relations, Event Planning, Business Finance.}
+\resumeItem{Currently pursuing with an expected graduation date of May 2025.}
+\resumeItemListEnd
+\resumeSubheading
+{Technische Universität Berlin}{Berlin, Germany}
+{Study Abroad; International Laboratory Experience in Robotics Programming}{May 2022 - Jun. 2022}
+\resumeItemListEnd
+
+% EXPERIENCE
+\section{Experience}
+
+\resumeSubHeadingListStart
+\resumeSubheading
+{Engineering Development Group Intern}{Natick, MA}
+{The Mathworks}{May 2023 - Aug 2023}
+\resumeItemListStart
+\resumeItem{Pioneered a code-generation pipeline permitting GPU hardware acceleration through Vulkan, resulting in 2x speed-ups in matrix operations with generated compute shaders; deployed open-source software to trim development time and introduce novel code optimizations.}
+\resumeItem{Expanded GPU acceleration code generation to target additional hardware platforms through using IREE; created MLIR conversion passes to convert internal code generated intermediate representation, enabling the utilization of pretrained third party machine learning models.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Student Fellow}{Ann Arbor, MI}
+{Consortium for Monitoring, Technology, and Verification - University of Michigan}{Jun 2022 - May 2023}
+\resumeItemListStart
+\resumeItem{Revamped software architecture for low-cost Geiger Counter, resulting in improved hardware performance, increased device compatibility, and reduced future maintenance requirements.}
+\resumeItem{Developed software for Raspberry Pi sensors for environmental radiation monitoring; created custom wiring harnessing to connect sensors with custom PCB, improving vibration safety, durability, and maintenance ease; identified PCB design flaws for future revisions.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Instructional Assistant}{Ann Arbor, MI}
+{University of Michigan}{Aug 2022 - Dec 2022}
+\resumeItemListStart
+\resumeItem{Devised course materials for introductory engineering concepts focusing on electrical engineering, radiation science, and radiation detection; fostered a safe, team-focused learning environment.}
+\resumeItem{Ensured safety compliance for students handling radiological sources through lesson planning, personal protective equipment, and lab execution; analyzed and optimized the circuit design of class-made Geiger counter by tuning software to heighten the device’s radiation sensitivity.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Assistant in Research}{Ann Arbor, MI}
+{University of Michigan}{Sep 2021 - May 2022}
+\resumeItemListStart
+\resumeItem{Developed firmware for custom sensors connected to an autonomous drone running PX4 autopilot, employing reliable communication protocols such as SPI and UART.}
+\resumeItem{Performed design analysis to balance the weight and power of system computers for aerial drone applications with the required computational strength; created a hardware development environment to swiftly test communication protocols and boards.}
+\resumeItemListEnd
+\resumeSubHeadingListEnd
+
+% SKILLS
+\section{Skills}
+\resumeSubHeadingListStart
+\item\small{
+     \textbf{Languages:} C/C++, Python, Java, HTML5, CSS, JavaScript, C\#, SQL, Matlab \\
+     \textbf{Tools:} XCode, Visual Studio, Git, Github, CAD, Raspberry Pi, SolidWorks, MySQL, MongoDB, Android Studio, Flask, IREE, MLIR, Vulkan, GPU, Compilers}
+\resumeSubHeadingListEnd
+
+%-------------------------------------------  
+\end{document}

@@ -1,0 +1,202 @@
+%-------------------------
+% Resume in Latex
+% Author : Jake Gutierrez
+% Based off of: https://github.com/sb2nov/resume
+% License : MIT
+%------------------------
+
+
+% only three bullet points man. you really need to work on this.
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\input{glyphtounicode}
+
+
+%----------FONT OPTIONS----------
+% sans-serif
+% \usepackage[sfdefault]{FiraSans}
+% \usepackage[sfdefault]{roboto}
+% \usepackage[sfdefault]{noto-sans}
+% \usepackage[default]{sourcesanspro}
+
+% serif
+% \usepackage{CormorantGaramond}
+% \usepackage{charter}
+
+
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Adjust margins
+\addtolength{\oddsidemargin}{-0.5in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1in}
+\addtolength{\topmargin}{-.5in}
+\addtolength{\textheight}{1.0in}
+
+\urlstyle{same}
+
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+% Sections formatting
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+% Ensure that generate pdf is machine readable/ATS parsable
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+\newcommand{\resumeItem}[1]{
+  \item[$\circ$]\small{
+    {#1 \vspace{-2pt}}
+  }
+}
+
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{0.97\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & #2 \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubSubheading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{0.97\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & #2 \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.15in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{center}
+	\textbf{\Huge \scshape Benjamin Datsko} \\ \vspace{1pt}
+	\small (248) 909-5982 $|$ \href{mailto:bdatsko@umich.edu}{\underline{bdatsko@umich.edu}} $|$
+	\href{https://linkedin.com/in/bendatsko/}{\underline{linkedin.com/in/bendatsko}} $|$
+	\href{https://github.com/bendatsko}{\underline{github.com/bendatsko}}
+\end{center}
+
+%-----------EDUCATION-----------
+\section{Education}
+\resumeSubHeadingListStart
+\resumeSubheading
+{University of Michigan -- College of Engineering}{Ann Arbor, MI}
+{Bachelor of Science and Engineering in Computer Science, Electrical Engineering Minor}{Aug. 2021 - Apr. 2025}
+\resumeItemListStart
+\resumeItem{Courses: CS Theory, Computational Linear Algebra, Data Structures and Algorithms, Discrete Mathematics.}
+
+\resumeItemListEnd
+\resumeSubHeadingListEnd
+
+%-----------EXPERIENCe-----------
+\section{Experience \scriptsize \scshape [SEE MORE AT \href{https://datsko.dev/projects}{\underline{DATSKO.DEV}}]}
+
+\resumeSubHeadingListStart
+\resumeSubheading
+{Undergraduate Research Scientist}{Ann Arbor, MI}
+{Michigan Integrated Circuits Laboratory -- Flynn Research Group}{Aug. 2022 -- Present}
+\resumeItemListStart
+\resumeItem{Created low-noise power supply for integrated circuits testing leveraging LiPo battery cells; added comprehensive battery management system into C++-based real-time operating system; achieved signal clarity 2x cleaner than industry-grade power supplies for half the cost.}
+\resumeItem{Formulated 130,000-parameter computational neural network using PyTorch for real-time object recognition to test model-on-chip RISC-V machine learning accelerator (ASIC). \textbf{Pending IEEE journal publication.}}
+\resumeItem{Overhauled 40-GHz modulated RF signal source using high-resolution DAC, FPGA, and up-converter; leveraged MATLAB to produce circular single-tone, QAM, etc., sequences run on FPGA (configured in SystemVerilog).}
+\resumeItem{Revised multi-axis high-torque motor control calibration system for over-the-air testing of 64-element 28-GHz digital beamformer with MATLAB and Raspberry Pi. Designed, tested, and assembled two-sided motherboard interfacing with Kintex RF FPGA; implemented beamforming algorithm in VHDL. \textbf{Pending IEEE journal publication.}}
+\resumeItemListEnd
+
+\resumeSubheading
+{Strategy/Software Engineer}{Ann Arbor, MI}
+{University of Michigan Solar Car Team}{Aug. 2022 -- Present}
+{\textbf{}}{}
+\resumeItemListStart
+\resumeItem{Led project combining the University of Michigan Solar Car's four distinct simulators (C++ race simulator, Java fluid dynamics simulator, Unity vehicle dynamics simulator, and Python weather simulator) into web application.}
+\resumeItem{Built a React front-end (using OAuth 2.0), four Flask-based simulator APIs, and an EJS REST API for interfacing with MongoDB container (Docker) to link user data to raw simulation output and statistical analysis results.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Gators STR Swim Team Head Coach}{Oxford, MI}
+{USA Swimming}{Apr. 2021 -- Sep. 2022}
+\resumeItemListStart
+\resumeItem{Created training regimen and supervised training sessions, providing direct feedback to $\sim$250 athletes.}
+\resumeItem{Evaluated the effectiveness of programming through statistical analysis, witnessing growth in 90\% of athletes.}
+\resumeItemListEnd
+
+\resumeSubheading
+{Information Technology Intern}{Flint, MI}
+{Hurley Medical Center - Main Campus}{Jun. 2021 -- Aug. 2021}
+\resumeItemListStart
+\resumeItem{Devised Shell scripts to automate disk encryption and perform proprietary operating system cloning.}
+\resumeItem{Performed hardware and software-level maintenance on medical devices, servers, and workstations.}
+\resumeItemListEnd
+\resumeSubHeadingListEnd
+
+
+%-----------PROJECTS-----------
+\section{Projects}
+\resumeSubHeadingListStart
+\resumeProjectHeading
+{\textbf{High-Altitude Payload for UV Radiation Detection} $|$ \emph{Arduino, Altium Designer}}{}
+\resumeItemListStart
+\resumeItem{Engineered weather balloon payload system to conduct UV radiation intensity measurements at altitudes of 86,000 feet; data analysis provided crucial insights into long-term ozone degradation trends in southeast Michigan.}
+\resumeItem{Wrote C firmware based on Super-Loop architecture to gather GPS and sensor data and Python script to parse GPS NMEA strings, extract waypoint data, and plot 42-mile-long flight path (using Google Maps API).}
+\resumeItemListEnd
+\resumeProjectHeading
+{\textbf{Pathfinding Algorithm Visualizer} $|$ \emph{Javascript, Adobe XD}}{}
+\resumeItemListStart
+\resumeItem{Constructed a web application for visualizing four pathfinding algorithms (A*, Dijkstra's, BFS, and DFS) incorporating real-time start/end point editing and obstacle drawing with cursor; written in Vanilla JavaScript.}
+\resumeItemListEnd
+\resumeProjectHeading
+{\textbf{Microsoft Partner, Realms Contributor} $|$ \emph{Java, Adobe Creative Cloud, Blender}}{}
+\resumeItemListStart
+\resumeItem{Developed three licensed games for Minecraft Realms -- \emph{The Missing Sandwich}, \emph{Annoying Ghosts}, and \emph{Witchcraft and Wizardry} -- utilizing Java, Adobe Creative Cloud, Blender; led team of six; garnered 600,000+ downloads.}
+\resumeItemListEnd
+\resumeSubHeadingListEnd
+
+
+%-----------PROGRAMMING SKILLS-----------
+\section{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}]
+	\small{\item{
+		\textbf{Languages}{: C, C++, C\#, Java, JavaScript, Unix, Python, Django, Swift, Rust, MySQL, NoSQL, Verilog, RTOS.} \\
+		\textbf{Technologies}{: Flask, Git, GraphQL, Kubernetes, LIDAR (feedback control), Machine Learning (OpenCV, PyTorch), Matplotlib, Node, NumPy, React, SCSS, TailwindCSS, WordPress, Azure, GSuite, Microsoft 365, Inventor, Altium.} \\
+        \textbf{Extracurriculars}{: U-M Club Swim Team, U-M Climbing Team, U-M Solar Car Team, U-M Rocketry Club (MASA).} \\
+	}}
+\end{itemize}
+
+
+%-------------------------------------------
+\end{document}
