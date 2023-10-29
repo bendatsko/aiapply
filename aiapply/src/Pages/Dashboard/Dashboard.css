@@ -1,182 +1,237 @@
 /* General Styles */
 body, html {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%;
+    font-family: 'Roboto', sans-serif; /* Using Roboto font */
 }
 
 .dashboard-container {
-  font-family: 'Arial', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* This helps push the footer down */
 }
+
+.dashboard-footer {
+    width: 100%;
+    padding: 20px;
+    background-color: #f0f0f0;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Remove any additional padding at the bottom of dashboard-container */
+.dashboard-container {
+    padding-bottom: 0;
+}
+
 .plus-sign {
-  font-size: 2rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+    font-size: 2rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
+
 /* Style for the Modal */
 .modal-dialog {
-  max-width: 60%; /* or any specific value */
+    max-width: 60%; /* or any specific value */
 }
 
 /* Style for the Textarea */
 .form-control {
-  /*height: 500px; !* or any specific value *!*/
+    /*height: 500px; !* or any specific value *!*/
 }
+
 .content-container {
-  padding: 0 2%; /* Or another value that suits the design */
+    padding: 0 2%; /* Or another value that suits the design */
 }
+
 .resumes-container, .template-container {
-  justify-content: space-between; /* or space-around */
+    justify-content: space-between; /* or space-around */
+}
+
+
+#resumesHeader {
+    margin-top: 20px;
 }
 
 .DashboardNav {
-  width: 100vw;
-  background-color: #f0f0f0;
-  /*padding: 20px;*/
-  min-width: 300px; /* Set a minimum width */
-  box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    width: 100vw;
+    background-color: #f0f0f0;
+    min-width: 300px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Slightly deeper shadow */
 }
 
 .content-container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
+
 
 /* Resumes Section */
 .resumes-section h2 {
-  text-align: left;
+    text-align: left;
 }
+
 .resumes-section, .templates-section {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* Align content to the left */
-  padding: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align content to the left */
+    padding: 20px;
 }
 
 
 .resumes-container {
-  display: flex;
-  flex-wrap: nowrap; /* Prevents wrapping so resumes will be in a single line */
-  overflow-x: auto;  /* Makes it horizontally scrollable */
-  gap: 20px;
+    display: flex;
+    flex-wrap: nowrap; /* Prevents wrapping so resumes will be in a single line */
+    overflow-x: auto; /* Makes it horizontally scrollable */
+    gap: 20px;
 }
+
 /* For screens >= 1920px */
 @media screen and (min-width: 1920px) {
-  .resume-card {
-    flex: 0 0 calc(25% - 20px); /* Adjusts the width to roughly 25% minus gap */
-  }
+    .resume-card {
+        flex: 0 0 calc(25% - 20px); /* Adjusts the width to roughly 25% minus gap */
+    }
 }
 
 /* For screens < 1920px but >= 1366px */
 @media screen and (max-width: 1919px) and (min-width: 1366px) {
-  .resume-card {
-    flex: 0 0 calc(50% - 20px); /* Adjusts the width to roughly 50% minus gap */
-  }
+    .resume-card {
+        flex: 0 0 calc(50% - 20px); /* Adjusts the width to roughly 50% minus gap */
+    }
 }
 
 /* For screens < 1366px but >= 769px */
 @media screen and (max-width: 1365px) and (min-width: 769px) {
-  .resume-card {
-    flex: 0 0 calc(50% - 20px); /* On medium screens, 50% width for 2 in a row */
-  }
+    .resume-card {
+        flex: 0 0 calc(50% - 20px); /* On medium screens, 50% width for 2 in a row */
+    }
 }
 
 /* For screens <= 768px but > 480px */
 @media screen and (max-width: 768px) and (min-width: 481px) {
-  .resume-card {
-    flex: 0 0 calc(50% - 20px); /* On medium screens, 50% width for 2 in a row */
-  }
+    .resume-card {
+        flex: 0 0 calc(50% - 20px); /* On medium screens, 50% width for 2 in a row */
+    }
+}
+
+
+@media screen and (max-width: 768px) {
+    .template-container {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory; /* Optional: enables snap scrolling */
+    }
+
+    .template-card {
+        flex: 0 0 auto; /* Avoids stretching of cards */
+        scroll-snap-align: start; /* Optional: for snap scrolling */
+    }
 }
 
 /* For screens <= 480px */
 @media screen and (max-width: 480px) {
-  .resume-card {
-    flex: 0 0 100%; /* On small screens, 100% width for 1 in a row */
-  }
+    .resume-card {
+        flex: 0 0 100%; /* On small screens, 100% width for 1 in a row */
+    }
 }
 
 .template-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start; /* Align items to the left in a row */
-  gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(225px, 1fr)); /* Creates a responsive grid */
+    gap: 20px; /* Space between cards */
+    justify-content: center; /* Centers the grid */
+    padding: 20px; /* Padding around the grid */
 }
+
+
 .resumes-container, .template-container {
-  margin: auto;
+    margin: auto;
 }
-
 
 
 .resume-card {
-  display: flex;
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
-  width: 200px; /* Adjust the width as needed */
-  border: 1px solid #ccc; /* Add a border for clarity */
-  overflow: hidden; /* Hide overflow content if any */
-  position: relative;
+    position: relative;
+    height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s; /* Added box-shadow transition */
 }
 
-.resume-card {
-  position: relative;
-  /*width: 200px;*/
-  height: 300px;
-  /*margin: 10px;*/
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s;
+.resume-card:hover {
+    transform: translateY(-5px); /* Subtle lift on hover */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Shadow on hover */
 }
+
 
 .resume-card img {
-  margin-top: 4.25rem;
-  height: 120%;
+    margin-top: 4.25rem;
+    height: 120%;
 }
 
 .resume-card.isNewResume {
-  font-size: 24px; /* Increase font size */
-  font-weight: bold; /* Make text bold */
+    font-size: 24px; /* Increase font size */
+    font-weight: bold; /* Make text bold */
 }
+
 /* Navbar */
 .navbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 1rem;
-  height: 70px;
-  padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    height: 70px;
+    padding: 20px;
 }
+
+.resume-carousel .carousel-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.resume-carousel .carousel-control-prev,
+.resume-carousel .carousel-control-next {
+    color: #000;
+    font-size: 24px;
+}
+
+@media (max-width: 768px) {
+    .resume-carousel .carousel-item {
+        flex-direction: column;
+    }
+}
+
+.carousel-inner {
+    scroll-behavior: smooth;
+}
+
 
 /* Templates Section */
 .templates-section {
-  /*background-color: #000;*/
-  color: #fff;
-  padding-bottom: 3rem;
+    /*background-color: #000;*/
+    color: #fff;
+    padding-bottom: 3rem;
 
 }
 
 .templates-section h2, p {
-  /*background-color: #000;*/
-  color: black;
+    /*background-color: #000;*/
+    color: black;
 }
 
 /* Footer */
-.footer {
-  width: 100%;
-  padding: 1rem;
-  /*background-color: #e9ecef;*/
-  text-align: center;
-}
+
 
 /*@media screen and (max-width: 768px) {*/
 /*  .resume-card {*/
@@ -189,3 +244,75 @@ body, html {
 /*    flex: 0 0 100%; !* On small screens, 100% width for 1 in a row *!*/
 /*  }*/
 /*}*/
+
+/* Style for "Create New Resume" Button */
+/* Button Container */
+.buttons-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align to left, change to flex-end for right alignment */
+    margin-bottom: 20px;
+}
+
+/* Primary Button (New Resume) */
+.create-new-resume-btn {
+    background-color: #2176de; /* Primary color */
+    color: white;
+    padding: 10px 20px; /* Slightly larger */
+    margin-right: 10px; /* Spacing between buttons */
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem; /* Slightly larger font */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.create-new-resume-btn:hover {
+    background-color: #0056b3;
+    transform: scale(1.01); /* Slight increase in size on hover */
+}
+
+/* Secondary Button (My Profile) */
+.my-profile-btn {
+    background-color: #f0f0f0; /* Lighter color for secondary button */
+    color: #333; /* Dark text color for contrast */
+    padding: 10px 20px;
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.my-profile-btn:hover {
+    background-color: #e0e0e0;
+    color: #333; /* Dark text color for contrast */
+    transform: scale(1.01); /* Slight increase in size on hover */
+}
+
+
+/* Custom Styles for Pagination */
+.MuiPaginationItem-root {
+    color: #4a4a4a; /* Dark grey color for text */
+}
+
+/* Style for the selected page */
+.MuiPaginationItem-page.Mui-selected {
+    background-color: #e3f2fd; /* Light blue background */
+    color: #1976d2; /* Slightly darker blue for contrast */
+    border: 1px solid #bbdefb; /* Light blue border */
+}
+
+/* Hover effect */
+.MuiPaginationItem-root:hover {
+    background-color: #f0f8ff; /* Very light blue for hover */
+    border-color: transparent; /* Remove border on hover */
+}
+
+/* Focus effect */
+.MuiPaginationItem-root.Mui-focusVisible {
+    background-color: #bbdefb; /* Light blue when focused */
+}
+
+/* Disabled state */
+.MuiPaginationItem-disabled {
+    color: #bdbdbd; /* Grey out disabled buttons */
+}

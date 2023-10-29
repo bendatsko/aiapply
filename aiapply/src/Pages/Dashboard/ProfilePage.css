@@ -1,44 +1,139 @@
+/* Base layout settings */
 .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
     width: 100%;
-    max-width: 600px;
     margin: auto;
     padding: 20px;
     background-color: #ffffff;
-    box-shadow: 0px 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-.about-user-textarea {
+/* Section titles */
+.profile-section-title {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Input and textarea styles */
+.profile-input, .profile-textarea {
     width: 100%;
-    min-height: 250px;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    resize: vertical; /* Allows the user to resize the textarea vertically */
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    color: #333;
 }
 
-.update-profile-button {
-    margin-top: 20px;
-    padding: 10px 20px;
+.profile-textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+/* Button styles */
+.profile-button, .update-profile-button, .close-profile-button {
+    padding: 10px 15px;
     background-color: #4CAF50;
     color: #ffffff;
     border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+
+/* Additional styling for update profile button */
+
+
+.close-profile-button {
+    background: #4a4a4a;
+}
+
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .profile-form {
+        padding: 15px;
+    }
+
+    .profile-section-title {
+        font-size: 1rem;
+    }
+
+    .profile-input, .profile-textarea {
+        padding: 10px;
+    }
+}
+
+
+/* Entry container */
+.entry {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+/* Add and Remove buttons */
+.add-button, .remove-button {
+    margin-top: 5px;
+    padding: 8px 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
     border-radius: 4px;
     cursor: pointer;
+    transition: background-color 0.3s;
 }
 
-.update-profile-button:hover {
-    background-color: #45a049;
+.remove-button {
+    background-color: #dc3545;
+}
+
+.add-button:hover, .remove-button:hover {
+    opacity: 0.9;
 }
 
 
-.about-user-title {
-    text-align: left;
+/* Additional custom styles */
+/* Feel free to add specific styles for certain sections or elements */
+.save-button {
+    margin-left: .5rem;
+    background-color: #f0f0f0; /* Lighter color for secondary button */
+    color: #333; /* Dark text color for contrast */
+    padding: 8px 12px;
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.save-button:hover {
+    background-color: #e0e0e0;
+    color: #333; /* Dark text color for contrast */
+    transform: scale(1.01); /* Slight increase in size on hover */
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 10px;
 }
 
+.profile-section-title {
+    margin: 0;
+    flex-grow: 1; /* Ensure the title takes available space */
+}
 
-.job-posting-input {
-    margin-top: 15px; /* or any other value */
-    margin-bottom: 15px; /* or any other value */
+.add-button {
+    /*margin-left: 10px; !* Add space between title and button *!*/
 }

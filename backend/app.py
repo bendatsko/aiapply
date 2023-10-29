@@ -22,24 +22,46 @@ default_app = firebase_admin.initialize_app(cred)
 db = firestore.client()
 
 
-@app.route('/generate_resume', methods=['POST'])
-def generate_resume():
+
+import requests
+
+# Add this function to your Flask app
+def save_cat_image(directory_path):
     try:
-        data = request.json
-        user_id = data.get('user_id')
-        profile = data.get('profile')
-        job = data.get('job')
-        template = data.get('template')
-        additional_data = data.get('additional_data')  # Extract additional data
-        print("Received user_id: ", user_id)
+        # URL of an API that provides cat images
+        cat_image_url = "https://cataas.com/cat"  # This is an example; replace with your preferred API
+        response = requests.get(cat_image_url)
+
+        if response.status_code == 200:
+            with open(os.path.join(directory_path, 'preview.jpeg'), 'wb') as file:
+                file.write(response.content)
+            return True
+    except Exception as e:
+        print(f"Error saving cat image: {e}")
+        return False
 
 
-        project_ref = db.collection('projects').add({
-            'user_id': user_id,
-            'latex_code': latex_code,
-            'created_at': firestore.SERVER_TIMESTAMP,
-            'additional_data': additional_data  # Storing additional data to Firestore
-        })
+
+@app.route('/create-directory', methods=['POST'])
+def create_directory():
+    data = request.json
+    user_id = data['userId']
+    resume_id = data['resumeId']
+
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    directory_path = os.path.join(base_dir, 'aiapply', 'public', 'users', user_id, resume_id)
+
+    try:
+        os.makedirs(directory_path, exist_ok=True)
+        if save_cat_image(directory_path):
+            return jsonify({"message": "Directory and cat image created successfully"}), 200
+        else:
+            return jsonify({"error": "Directory created but failed to save cat image"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+
 
 
 

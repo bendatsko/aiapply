@@ -1,74 +1,117 @@
-import React, { useState, useEffect } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase'; // Adjust the import path if needed
-import { Button } from 'react-bootstrap';
+import React, {useEffect, useState} from 'react';
+import {Button, Form, Modal} from 'react-bootstrap';
+import {doc, setDoc} from 'firebase/firestore';
+import {v4 as uuidv4} from 'uuid';
+import {db} from '../../firebase';
 
-function NewResumeModal({ onClose }) {
-  const [templates, setTemplates] = useState([]);
-  const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [jobPosting, setJobPosting] = useState('');
-  const [goals, setGoals] = useState('');
-  const [additionalInfo, setAdditionalInfo] = useState(''); // An extra field for any additional information
-  
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      try {
-        const templatesCollectionRef = collection(db, 'templates');
-        const templatesSnapshot = await getDocs(templatesCollectionRef);
-        setTemplates(templatesSnapshot.docs.map(doc => doc.data()));
-      } catch (error) {
-        console.error('Error fetching templates:', error);
-      }
+const NewResumeModal = ({
+                            isOpen,
+                            onClose,
+                            user,
+                            fetchResumeData,
+                            templates
+                        }) => {
+
+    const [title, setTitle] = useState('');
+    const [jobPosting, setJobPosting] = useState('');
+    const [selectedTemplateId, setSelectedTemplateId] = useState('');
+
+    useEffect(() => {
+        // Reset form when modal is opened
+        if (isOpen) {
+            setTitle('');
+            setJobPosting('');
+            setSelectedTemplateId(templates[0]?.id || '');
+        }
+    }, [isOpen, templates]);
+
+    if (!user) {
+        return null;
+    }
+
+    console.log("user " + user.id + " is visiting new resume modal");
+
+    const generateResume = async () => {
+        try {
+            const resumeId = uuidv4();
+            const previewImagePath = `/users/${user.uid}/${resumeId}/preview.jpeg`;
+
+            const newResume = {
+                createdAt: new Date(),
+                previewImagePath,
+                title, // Use the state title
+                userId: user.uid,
+                jobPosting, // Store the job posting
+                templateId: selectedTemplateId // Store the selected template ID
+            };
+
+            // Add the new resume to Firestore with resumeId as the document ID
+            const resumeRef = doc(db, 'resumes', resumeId);
+            await setDoc(resumeRef, newResume);
+
+            await fetch('http://localhost:5000/create-directory', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({userId: user.uid, resumeId: resumeId})
+            });
+
+            setTimeout(() => {
+                fetchResumeData();
+            }, 5000);
+
+            onClose(); // Close the modal
+        } catch (error) {
+            console.error("Error creating new resume: ", error);
+        }
     };
-    
-    fetchTemplates();
-  }, []);
-  
-  const handleGenerateResume = () => {
-    // Logic for generating the resume, including making API call and updating Firestore
-    // This can be passed down as a prop or handled here
-  };
-  
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-left">
-          <h4>Select Template</h4>
-          <select value={selectedTemplate} onChange={(e) => setSelectedTemplate(e.target.value)}>
-            {templates.map((template, index) => (
-              <option key={index} value={template.name}>{template.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="modal-right">
-          <h4>New Resume</h4>
-          <input 
-            type="text"
-            value={jobPosting}
-            onChange={(e) => setJobPosting(e.target.value)}
-            placeholder="Enter the Job Posting"
-            className="job-posting-input form-control"
-          />
-          <input 
-            type="text"
-            value={goals}
-            onChange={(e) => setGoals(e.target.value)}
-            placeholder="Enter your goals"
-            className="goals-input form-control"
-          />
-          <input 
-            type="text"
-            value={additionalInfo}
-            onChange={(e) => setAdditionalInfo(e.target.value)}
-            placeholder="Enter any additional information"
-            className="additional-info-input form-control"
-          />
-          <Button variant="primary" onClick={handleGenerateResume}>Generate Resume</Button>
-          <Button variant="secondary" onClick={onClose}>Close</Button>
-        </div>
-      </div>
-    </div>
-  );
-}
+
+    return (
+        <Modal show={isOpen} onHide={onClose}>
+            <Modal.Header closeButton>
+                <Modal.Title>Create New Resume</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Form.Group>
+                        <Form.Label>Title:</Form.Label>
+                        <Form.Control
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Job Posting (URL or Description):</Form.Label>
+                        <Form.Control
+                            as="textarea"
+                            value={jobPosting}
+                            onChange={(e) => setJobPosting(e.target.value)}
+                        />
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Choose a Template:</Form.Label>
+                        <Form.Control
+                            as="select"
+                            value={selectedTemplateId}
+                            onChange={(e) => setSelectedTemplateId(e.target.value)}
+                        >
+                            {templates.map(template => (
+                                <option key={template.id} value={template.id}>
+                                    {template.title}
+                                </option>
+                            ))}
+                        </Form.Control>
+                    </Form.Group>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="primary" onClick={generateResume}>Generate</Button>
+                <Button variant="secondary" onClick={onClose}>Close</Button>
+            </Modal.Footer>
+        </Modal>
+    );
+};
 
 export default NewResumeModal;

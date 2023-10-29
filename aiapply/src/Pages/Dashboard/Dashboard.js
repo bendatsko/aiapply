@@ -1,18 +1,22 @@
-import React, {useEffect, useState, useContext, useCallback} from 'react';
-import {Link, useLocation, useNavigate} from 'react-router-dom';
-import {collection, doc, getDoc, setDoc, addDoc, getDocs, query, where, updateDoc} from 'firebase/firestore';
-import {db, auth} from '../../firebase';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
+import {collection, deleteDoc, doc, getDoc, getDocs, setDoc} from 'firebase/firestore';
+
+import {auth, db} from '../../firebase';
 import UserContext from '../../UserContext';
 import './Dashboard.css';
-import {Modal, Button} from 'react-bootstrap';
+import {Button, Modal} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import axios from 'axios';
 import TemplateCard from './TemplateCard';
-import ResumeCard from './ResumeCard';
-import Confetti from 'react-confetti';
 import DashboardNavbar from './DashboardNavbar';
-import { onAuthStateChanged } from 'firebase/auth';
-
+import {onAuthStateChanged} from 'firebase/auth';
+import NewResumeModal from './NewResumeModal';
+import {Grid, Pagination} from '@mui/material';
+import OnboardingModal from './OnboardingModal';
+import ProfilePage from "./ProfilePage";
+import TemplateDetailsModal from "./TemplateDetailsModal";
+import ResumeCard from "./ResumeCard.js";
+import ResumeDetailsModal from "./ResumeDetailsModal";
 
 function Dashboard() {
     const navigate = useNavigate();
@@ -21,112 +25,76 @@ function Dashboard() {
     const [userData, setUserData] = useState(null);
     const user = useContext(UserContext);
 
+
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            if (!currentUser) {
-                navigate("/login");
+        if (!user) {
+            navigate("/login", {state: {sessionExpired: true}});
+        }
+    }, [user, navigate]);
+
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+
+            // Check if user profile exists in Firebase, create if not
+            const userDocRef = doc(db, 'users', currentUser.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            if (!userDoc.exists()) {
+                await setDoc(userDocRef, {
+                    email: currentUser.email,
+                    displayName: currentUser.displayName,
+                    // other default fields
+                });
             }
-            // else, you can set the user data into some local state or context if needed.
+            // else, set the user data into some local state or context
+
         });
 
         // Cleanup the listener on component unmount
         return () => unsubscribe();
     }, [navigate]);
 
-    const [jobPosting, setJobPosting] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [loadingMessage, setLoadingMessage] = useState('');
-    const [selectedTemplate, setSelectedTemplate] = useState('Template 1');
     const [isAddTemplateModalOpen, setAddTemplateModalOpen] = useState(false);
     const [latexCode, setLatexCode] = useState('');
     const [templateTitle, setTemplateTitle] = useState('');
     const [templateDescription, setTemplateDescription] = useState('');
-    const [notification, setNotification] = useState({message: '', type: ''});
     const [templates, setTemplates] = useState([]);
-    const [selectedTemplateData, setSelectedTemplateData] = useState({});
     const [resumes, setResumes] = useState([]);
-    const [showConfetti, setShowConfetti] = useState(false);
-    const [isLatexModalOpen, setLatexModalOpen] = useState(false);
     const [selectedLatex, setSelectedLatex] = useState('');
     const [latexPreviewSrc, setLatexPreviewSrc] = useState('');
     const [recentlyOpened, setRecentlyOpened] = useState([]);
-    const [selectedResume, setSelectedResume] = useState(null);
-    const [isNewResumeModalOpen, setNewResumeModalOpen] = useState(false);
     const [isViewResumeModalOpen, setViewResumeModalOpen] = useState(false);
-    const openNewResumeModal = () => setNewResumeModalOpen(true);
-    const closeNewResumeModal = () => setNewResumeModalOpen(false);
-
-    const openViewResumeModal = () => setViewResumeModalOpen(true);
-    const closeViewResumeModal = () => setViewResumeModalOpen(false);
-    const [lastUpdated, setLastUpdated] = useState(Date.now());
-    const [resumePreviewSrc, setResumePreviewSrc] = useState('');
-
-
-    const convertLatexToImage = async (latexCode) => {
-        try {
-            const response = await axios.post('http://localhost:5000/convert_latex', {
-                latex_code: latexCode
-            });
-
-            if (response.data.image) {
-                setResumePreviewSrc(`data:image/png;base64,${response.data.image}`);
-            } else {
-                console.error('Failed to get image for LaTeX code:', latexCode);
-            }
-        } catch (error) {
-            console.error('Error converting LaTeX to image:', error);
-        }
-    };
+    const [isOnboardingModalOpen, setOnboardingModalOpen] = useState(false);
+    const openProfileModal = useCallback(() => setProfileModalOpen(true), []);
+    const closeProfileModal = useCallback(() => setProfileModalOpen(false), []);
+    const [isProfileModalOpen, setProfileModalOpen] = useState(false);
+    const [selectedTemplate, setSelectedTemplate] = useState(null);
+    const [selectedResume, setSelectedResume] = useState(null);
+// Pagination state for resumes and templates
 
 
-    useEffect(() => {
-        const fetchResumes = async () => {
-            if (user && userId) {
+// Pagination state for resumes and templates
+    const [currentResumePage, setCurrentResumePage] = useState(1);
+    const [currentTemplatePage, setCurrentTemplatePage] = useState(1);
+    const itemsPerPage = 4; // Display 4 items per page
 
 
-                try {
-                    const projectsCollectionRef = collection(db, 'projects');
-                    const q = query(projectsCollectionRef, where('user_id', '==', userId || user.uid));
-                    const projectsSnapshot = await getDocs(q);
+// Calculate total pages for resumes and templates
+    const totalPagesResumes = Math.ceil(resumes.length / itemsPerPage);
+    const totalPagesTemplates = Math.ceil(templates.length / itemsPerPage);
 
-                    // Sort resumes based on timestamp
-                    const sortedProjects = projectsSnapshot.docs.map(doc => ({id: doc.id, ...doc.data()})).sort((a, b) => new Date(b.lastOpened) - new Date(a.lastOpened));
-                    setResumes([{
-                        id: 'new', // or any unique identifier for New Resume
-                        isNewResume: true, // additional property to identify New Resume
-                    }, ...sortedProjects]);
-                } catch (error) {
-                    console.error('Error fetching projects:', error);
-                }
-            }
-            ;
-            fetchResumes(); // Call the function to fetch resumes
-        }
-    }, [userId, user.uid, lastUpdated]); // Other useEffect and functions remains unchanged ...
+    // Get current resumes and templates based on respective current pages
+    const currentResumes = resumes.slice(
+        (currentResumePage - 1) * itemsPerPage,
+        currentResumePage * itemsPerPage
+    );
 
+    const currentTemplates = templates.slice(
+        (currentTemplatePage - 1) * itemsPerPage,
+        currentTemplatePage * itemsPerPage
+    );
 
-    useEffect(() => {
-        fetchResumes(); // Call the function to fetch resumes
-    }, [userId, user.uid, lastUpdated]); // Add
-
-
-    useEffect(() => {
-        const fetchRecentlyOpened = async () => {
-            try {
-                const recentlyOpenedCollectionRef = collection(db, 'recentlyOpened');
-                const q = query(recentlyOpenedCollectionRef, where('user_id', '==', userId || user.uid));
-                const recentlyOpenedSnapshot = await getDocs(q);
-                const recentlyOpenedResumes = recentlyOpenedSnapshot.docs.map(doc => doc.data());
-                console.log('Fetched Recently Opened Resumes:', recentlyOpenedResumes);
-                setRecentlyOpened(recentlyOpenedResumes);
-            } catch (error) {
-                console.error('Error fetching recently opened resumes:', error);
-            }
-        };
-        fetchRecentlyOpened();
-    }, []);
-
-// Outside of the return statement, log the resumes
     console.log('Recently Opened Resumes:', recentlyOpened);
     console.log('Resumes:', resumes);
 
@@ -134,30 +102,45 @@ function Dashboard() {
         setAddTemplateModalOpen(true);
     }, []);
 
-    const closeAddTemplateModal = useCallback(() => {
-        setAddTemplateModalOpen(false);
+
+    function getResumeTitleForTemplate(template) {
+        // Placeholder logic: Replace with your actual logic to get the resume title
+        // This might involve finding a resume from the `resumes` state that matches the template
+        const resume = resumes.find(resume => resume.templateId === template.id); // Assuming each resume has a templateId
+        return resume ? resume.title : null; // Return the title if the resume is found
+    }
+
+
+    const closeOnboardingModal = useCallback(async () => {
+        setOnboardingModalOpen(false);
+        const userDocRef = doc(db, 'users', userId || user.uid);
+        await setDoc(userDocRef, {onboarded: true}, {merge: true});
+    }, [user, userId]);
+
+    const handleProfileUpdated = (notificationData) => closeProfileModal();
+
+    const handleTemplateClick = useCallback((template) => {
+        setSelectedTemplate(template);
     }, []);
 
 
-
-
-// Function to handle pencil icon click
-    const handlePencilClick = (latexCode) => {
-        // Set the selected LaTeX code
-        setSelectedLatex(latexCode);
-
-        // Open the LaTeX modal
-        setLatexModalOpen(true);
-
-
+    const handleResumeClick = (resume) => {
+        setSelectedResume(resume);
+        setViewResumeModalOpen(true);  // This should now only open ResumeDetailsModal
     };
 
-// Function to close the LaTeX modal
-    const closeLatexModal = () => {
-        setLatexModalOpen(false);
-        setSelectedLatex('');
-        setLatexPreviewSrc('');
+// Add a new function to handle LaTeX preview
+
+
+    const deleteResume = async (resumeId) => {
+        try {
+            await deleteDoc(doc(db, 'resumes', resumeId));
+            fetchResumeData(); // Refresh the list of resumes
+        } catch (error) {
+            console.error('Error deleting resume:', error);
+        }
     };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -168,7 +151,14 @@ function Dashboard() {
 
                     if (userDoc.exists()) {
                         setUserData(userDoc.data());
-                    } else { // User document doesn't exist, creating a new one
+
+                        setUserData(userDoc.data());
+                        if (!userDoc.data().onboarded) {
+                            setOnboardingModalOpen(true);
+                        }
+
+
+                    } else {
                         await setDoc(userDocRef, {
                             email: user.email, displayName: user.displayName, resumeCount: 0, preferences: {}, // Any default preferences
                         });
@@ -182,95 +172,18 @@ function Dashboard() {
         fetchData();
     }, [user, userId]);
 
-    const [isModalOpen, setModalOpen] = useState(false);
-
-    const openModal = useCallback(() => {
-        console.log("Opening modal");
-        setModalOpen(true);
-    }, []);
-
-
-    const closeModal = useCallback(() => {
-        setModalOpen(false);
-    }, []);
-
-
-    const generateResume = async () => {
-        setIsLoading(true);
-        setLoadingMessage(' Generating...');
-
-        try {
-            const userDocRef = doc(db, 'users', userId || user.uid);
-            const userDoc = await getDoc(userDocRef);
-            const userProfile = userDoc.data().aboutUser || {}; // Replace with actual key if different
-
-            // Include all necessary details here
-            const additionalData = {
-                resumeName: document.getElementById('resumeName').value, // Getting resumeName from input
-                jobPosting: jobPosting,
-                selectedTemplateData: selectedTemplateData,
-                // ...any other details
-            };
-
-            const response = await axios.post('http://localhost:5000/generate_resume', {
-                user_id: userId || user.uid, // include user ID here
-                profile: userProfile,
-                job: jobPosting,
-                template: selectedTemplate,
-                additional_data: additionalData, // sending additional data
-            });
-
-
-            if (response.status === 200) {
-                // Increment resumeCount in Firebase
-                await setDoc(userDocRef, {resumeCount: (userDoc.data().resumeCount || 0) + 1}, {merge: true});
-
-                // Update local state if necessary
-                setUserData((prevData) => ({
-                    ...prevData, resumeCount: (prevData.resumeCount || 0) + 1,
-                }));
-
-                // Store the generated resume in Firebase
-                const resumesCollectionRef = collection(db, 'resumes');
-                const resumeDocRef = doc(db, 'resumes', selectedResume.id); // Use the correct collection and document path
-                await setDoc(resumeDocRef, {latex_code: selectedLatex}, {merge: true});
-                console.log('LaTeX Code Updated or Added Successfully');
-
-                console.log('LaTeX Code Updated or Added Successfully');
-
-
-                // Reset loading state and redirect or update UI
-                setIsLoading(false);
-
-                setShowConfetti(true);
-                setLoadingMessage('Resume Generated!');
-                // Reset loading state and redirect or update UI after a delay to allow user to see the confetti
-                setTimeout(() => {
-                    setIsLoading(false);
-                    setShowConfetti(false);
-                }, 3000);
-                // navigate('/output_page');
-            } else {
-                console.error('Error generating resume:', response);
-            }
-        } catch (error) {
-            console.error('Error generating resume:', error);
-        }
-    };
-
 
     useEffect(() => {
         const fetchTemplates = async () => {
-            try {
-                const templatesCollectionRef = collection(db, 'templates');
-                const templatesSnapshot = await getDocs(templatesCollectionRef);
+            const templatesCollectionRef = collection(db, 'templates');
 
-                const fetchedTemplates = await Promise.all(templatesSnapshot.docs.map(async doc => {
+            try {
+                const querySnapshot = await getDocs(templatesCollectionRef);
+                const fetchedTemplates = querySnapshot.docs.map(doc => {
                     const templateData = doc.data();
                     const previewPath = templateData.preview ? `/templates/${templateData.preview}` : null;
-                    return {...templateData, previewPath};
-                }));
-
+                    return {...templateData, previewPath, id: doc.id};
+                });
 
                 setTemplates(fetchedTemplates);
             } catch (error) {
@@ -282,323 +195,181 @@ function Dashboard() {
     }, []);
 
 
-    const handleResumeClick = async (resume) => {
-        console.log('Clicked Resume Object:', JSON.stringify(resume, null, 2));
-        if (!resume || !resume.id) {
-            console.error('Resume or resume.id is undefined:', resume);
-            return;
-        }
-        setSelectedResume(resume); // Set the entire resume object here
-        if (resume.latex_code) setSelectedLatex(resume.latex_code); // Set the selectedLatex state here.
-        try {
-            const resumeDocRef = doc(db, 'projects', resume.user_id);
-            // Assuming resume.latex_code contains the LaTeX code for the resume
-            if (resume.latex_code) setSelectedLatex(resume.latex_code); // Set the selectedLatex state here.
-            // ...
-        } catch (error) {
-            console.error('Error updating resume timestamp:', error);
-        }
-    }
+    // const [resumes, setResumes] = useState([]);
+
+
+    const fetchResumeData = async () => {
+        const resumesCollectionRef = collection(db, 'resumes');
+        const querySnapshot = await getDocs(resumesCollectionRef);
+        const fetchedResumes = querySnapshot.docs.map(doc => {
+            const resumeData = {...doc.data(), id: doc.id};
+            console.log(`Fetched Resume: ${resumeData.id}`, resumeData);  // Add this line
+            return resumeData;
+        });
+        setResumes(fetchedResumes);
+    };
 
 
     useEffect(() => {
-        fetchResumes(); // Call the function to fetch resumes
-    }, [lastUpdated]); // Add lastUpdated to dependency array
+        fetchResumeData();
+    }, [user, userId]); // Include dependencies that should trigger the re-fetching of resume data
 
 
-    const fetchResumes = useCallback(async () => {
-        // ... existing logic to fetch resumes
-    }, [userId, user.uid]); // Or other dependencies if needed
+    return (<div className="dashboard-container">
+        <div className={"DashboardNav"}>
+            <DashboardNavbar/>
+        </div>
 
-    const handleSaveLatex = async () => {
-        try {
-            if (!selectedResume || !selectedResume.id) throw new Error('Selected resume or its ID is undefined');
-
-            const projectDocRef = doc(db, 'projects', selectedResume.id); // Use the document ID here
-            await updateDoc(projectDocRef, {latex_code: selectedLatex});
-            console.log('LaTeX Code Updated Successfully for', selectedResume.id);
-
-            // Call the function to refetch resumes
-            await fetchResumes();
-            setLastUpdated(Date.now()); // Update the lastUpdated state
-            if (selectedLatex) {
-                await convertLatexToImage(selectedLatex);
-            }
-        } catch (error) {
-            console.error('Error updating LaTeX code:', error);
-        }
-    };
-
-    const openLatexModal = async (latexCode) => {
-        setSelectedLatex(latexCode);
-        setLatexModalOpen(true);
-
-        // Convert and set the LaTeX preview
-        if (latexCode) {
-            await convertLatexToImage(latexCode);
-        }
-    };
-
-    
-    
-
-    if (!user || !userId) {
-        return null; // Or return a loading spinner, or some placeholder component.
-    }
-
-
-    return (
-        <div className="dashboard-container">
-            <div className={"DashboardNav"}>
-                <DashboardNavbar />
-            </div>
-
-            <div className="content-container"> {/* This is the new container div */}
-                <section className="resumes-section">
-                    <h2>Resumes</h2>
-                    <div className="resumes-container">
-                        {resumes.map((resume, index) => (
-                            <div
-                                key={index}
-                                className="resume-card"
-                                onClick={async () => {
-                                    if (resume.isNewResume) {
-                                        openNewResumeModal();
-                                    } else {
-                                        await handleResumeClick(resume);
-                                        setSelectedResume(resume);
-                                        openViewResumeModal();
-
-                                        // Fetch the LaTeX preview image when clicking an existing resume
-                                        if (resume.latex_code) {
-                                            await convertLatexToImage(resume.latex_code);
-                                        }
-                                    }
-                                }}
-                            >
-                                {resume.isNewResume ? (
-                                    <div className="plus-sign">+</div>
-                                ) : (
-                                    <img
-                                        src={resumePreviewSrc}
-                                        alt="Resume Preview"
-                                        className="resume-preview-image"
-                                    />
-                                )}
-                            </div>
-                        ))}
-
-
-                    </div>
-
-                </section>
-
-
-                <section className="templates-section">
-                    <h2>Templates</h2>
-
-                    <div className="template-container">
-                        {templates.map((template, index) => (
-                            <TemplateCard key={index} imageSrc={template.previewPath} />
-
-                        ))}
-                    </div>
-                    <p>Find more templates in the <a href="/community">Community Tab</a>.</p>
-                </section>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                {/*BEGIN MODALS*/}
-                <Modal
-                    show={isNewResumeModalOpen}
-                    onHide={closeNewResumeModal}
-                    dialogClassName="modal-dialog"
-                >
-                    {showConfetti && <Confetti/>}
-                    {userData && userData.role === 'admin' && (// Render AdminRibbon component for admin users
-                        console.log("Admin status registered in dashboard.js")
-
-                    )}
-                    <Modal.Header closeButton>
-                        <Modal.Title>Create Resume</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div className="row">
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <label htmlFor="templateSelect">Select Template:</label>
-                                    <select
-                                        id="templateSelect"
-                                        className="form-control"
-                                        onChange={async (e) => {
-                                            const selected = e.target.value;
-                                            // Here, find the selected template object from your templates array
-                                            const selectedTemplateObj = templates.find(template => template.name === selected);
-
-                                            if (selectedTemplateObj) {
-                                                // If you need to fetch or generate the preview, do it here
-                                                setSelectedTemplateData(selectedTemplateObj);
-                                            }
-                                        }}
-                                    >
-                                        {templates.map((template, index) => (<option key={index} value={template.name}>
-                                            {template.name}
-                                        </option>))}
-                                    </select>
-                                </div>
-
-
-                                <div className="template-preview">
-                                    {selectedTemplateData.imageSrc && (<>
-                                        <img src={selectedTemplateData.imageSrc} alt="Template Preview"/>
-                                        <p>Template: {selectedTemplateData.title}</p>
-                                    </>)}
-                                </div>
-                            </div>
-
-
-                            <div className="col-md-6">
-                                <div className="form-group">
-                                    <label htmlFor="resumeName">Name:</label>
-                                    <input
-                                        type="text"
-                                        id="resumeName"
-                                        className="form-control"
-                                        placeholder="Google Senior Software Engineer"
-                                    />
-                                </div>
-                                <div className="form-group">
-                                    <label htmlFor="jobPosting">Job Posting:</label>
-                                    <textarea
-                                        id="jobPosting"
-                                        value={jobPosting}
-                                        onChange={(e) => setJobPosting(e.target.value)}
-                                        className="form-control job-posting-textarea"
-                                        placeholder="Copy and paste the job posting here"
-                                    />
-                                </div>
-                                <div className="informative-text">
-                                    <p>AI Apply will now use the profile you provided and the job posting you provided
-                                        to
-                                        generate a targeted resume where the best foot of the user is being put
-                                        forward.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={closeViewResumeModal}>
-                            Close
-                        </Button>
-
-                        <Button variant="primary" onClick={handleSaveLatex}>
-                            Save
-                        </Button>
-                    </Modal.Footer>
-
-                </Modal>
-
-
-                <Modal show={isAddTemplateModalOpen} onHide={closeAddTemplateModal}>
-                    {notification.message && (<div className={`notification ${notification.type}`}>
-                        {notification.message}
-                    </div>)}
-
-                    <Modal.Header closeButton>
-                        <Modal.Title>Add New Template</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {/* Well-formatted fields to enter LaTeX code, title, and description */}
-                        <form>
-                            <div className="form-group">
-                                <label htmlFor="templateTitle">Title:</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="templateTitle"
-                                    value={templateTitle}
-                                    onChange={(e) => setTemplateTitle(e.target.value)}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="templateDescription">Description:</label>
-                                <textarea
-                                    className="form-control"
-                                    id="templateDescription"
-                                    value={templateDescription}
-                                    onChange={(e) => setTemplateDescription(e.target.value)}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="latexCode">LaTeX Code:</label>
-                                <textarea
-                                    className="form-control"
-                                    id="latex_code"
-                                    value={latexCode}
-                                    onChange={(e) => setLatexCode(e.target.value)}
-                                />
-                            </div>
-                        </form>
-                    </Modal.Body>
-                    <Modal.Footer>
-
-
-                    </Modal.Footer>
-                </Modal>
-
-                <Modal show={isViewResumeModalOpen} onHide={closeViewResumeModal}>
-                    <Modal.Header closeButton>
-                        <Modal.Title>LaTeX Preview</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div>
-                            <h5>LaTeX Code:</h5>
-                            <textarea
-                                value={selectedLatex}
-                                className="form-control"
-                                onChange={(e) => setSelectedLatex(e.target.value)} // update the state as user types
-                            />
-                        </div>
-                        <div>
-                            <h5>Preview:</h5>
-                            {latexPreviewSrc && <img src={latexPreviewSrc} alt="LaTeX Preview"/>}
-
-                        </div>
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button variant="secondary" onClick={closeViewResumeModal}>
-                            Close
-                        </Button>
-
-                        <Button variant="primary" onClick={handleSaveLatex}>Save</Button>
-                    </Modal.Footer>
-                </Modal>
-            </div>
-
-            <div className="footer py-4">
-                <div className="container text-center">
-                    <p>&copy; 2023 AiApply. All Rights Reserved.</p>
-                    <p><Link to="/privacy">Privacy Policy</Link> | <Link to="/terms">Terms of Service</Link></p>
+        <div className="content-container"> {/* This is the new container div */}
+            <section className="resumes-section">
+                <h2 id="resumesHeader">Resumes</h2>
+                <div className="buttons-container">
+                    <Button variant="primary" className="create-new-resume-btn" onClick={openAddTemplateModal}>
+                        New Resume
+                    </Button>
+                    <Button variant="secondary" className="my-profile-btn" onClick={openProfileModal}>
+                        My Portfolio
+                    </Button>
                 </div>
-            </div>
-        </div>);
+
+                <Grid container spacing={2}>
+                    {currentResumes.map((resume, index) => {
+                        console.log(`Rendering Resume: ${resume.id}`, resume);  // Add this line
+                        return (
+                            <Grid item xs={12} sm={6} md={3} key={index}>
+                                <ResumeCard
+                                    resume={resume}
+                                    title={resume.title}
+                                    userId={userId}
+                                    imageSrc={resume.previewImagePath}
+                                    onClick={() => handleResumeClick(resume)}
+                                />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+
+
+                {resumes.length > 0 && (
+                    <Pagination
+                        count={totalPagesResumes}
+                        page={currentResumePage}
+                        onChange={(event, value) => setCurrentResumePage(value)}
+                        color="primary"
+                        sx={{
+                            '.MuiPaginationItem-root': {color: '#4a4a4a'},
+                            '.MuiPaginationItem-page.Mui-selected': {
+                                backgroundColor: '#e3f2fd',
+                                color: '#1976d2',
+                                border: '1px solid #bbdefb'
+                            },
+                            '.MuiPaginationItem-root:hover': {
+                                backgroundColor: '#f0f8ff',
+                                borderColor: 'transparent'
+                            },
+                            '.MuiPaginationItem-root.Mui-focusVisible': {backgroundColor: '#bbdefb'},
+                            '.MuiPaginationItem-disabled': {color: '#bdbdbd'}
+                        }}
+                    />
+                )}
+
+            </section>
+
+
+            <section className="templates-section">
+                <h2>Templates</h2>
+                <Grid container spacing={2}>
+                    {currentTemplates.map((template, index) => {
+                        const resumeTitle = getResumeTitleForTemplate(template); // This is already correct
+
+                        return (
+                            <Grid item xs={12} sm={6} md={3} key={index}>
+                                <TemplateCard
+                                    imageSrc={template.previewPath}
+                                    title={template.title}
+                                    description={template.description}
+                                    onClick={() => handleTemplateClick(template)}
+                                    template={template}
+                                />
+                            </Grid>
+                        );
+                    })}
+                </Grid>
+
+
+                <Pagination
+                    count={totalPagesTemplates}
+                    page={currentTemplatePage}
+                    onChange={(event, value) => setCurrentTemplatePage(value)}
+                    color="primary"
+                    sx={{
+                        '.MuiPaginationItem-root': {color: '#4a4a4a'},
+                        '.MuiPaginationItem-page.Mui-selected': {
+                            backgroundColor: '#e3f2fd',
+                            color: '#1976d2',
+                            border: '1px solid #bbdefb'
+                        },
+                        '.MuiPaginationItem-root:hover': {
+                            backgroundColor: '#f0f8ff',
+                            borderColor: 'transparent'
+                        },
+                        '.MuiPaginationItem-root.Mui-focusVisible': {backgroundColor: '#bbdefb'},
+                        '.MuiPaginationItem-disabled': {color: '#bdbdbd'}
+                    }}
+                />
+
+                <p>Find more templates in the <a href="/community">Community Tab</a>.</p>
+            </section>
+
+
+            <Modal show={isProfileModalOpen} onHide={closeProfileModal} dialogClassName="profile-modal-dialog">
+                <ProfilePage
+                    userId={user?.uid}
+                    onProfileUpdated={handleProfileUpdated}
+                    onModalClose={closeProfileModal}/>
+
+            </Modal>
+
+            <NewResumeModal
+                isOpen={isAddTemplateModalOpen}
+                onClose={() => setAddTemplateModalOpen(false)}
+                user={user}
+                fetchResumeData={fetchResumeData}
+                templates={templates} // Pass the templates to the modal
+            />
+
+
+            {/*<ViewResumeModal*/}
+            {/*    isOpen={isViewResumeModalOpen}*/}
+            {/*    onClose={() => setViewResumeModalOpen(false)}*/}
+            {/*    selectedLatex={selectedLatex}*/}
+            {/*    setSelectedLatex={setSelectedLatex}*/}
+            {/*    latexPreviewSrc={latexPreviewSrc}*/}
+            {/*/>*/}
+
+            <TemplateDetailsModal
+                isOpen={selectedTemplate !== null}
+                onClose={() => setSelectedTemplate(null)}
+                template={selectedTemplate}
+            />
+
+            <OnboardingModal isOpen={isOnboardingModalOpen} onClose={closeOnboardingModal}/>
+
+            <ResumeDetailsModal
+                isOpen={isViewResumeModalOpen}
+                onClose={() => setViewResumeModalOpen(false)}
+                resume={selectedResume}
+                deleteResume={deleteResume}
+            />
+
+
+        </div>
+
+        {/* Footer */}
+        <footer className="dashboard-footer">
+            <p>© 2023 AiApply. All rights reserved.</p>
+        </footer>
+    </div>);
 }
 
 export default Dashboard;
