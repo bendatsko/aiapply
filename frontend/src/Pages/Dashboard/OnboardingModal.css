@@ -1,0 +1,55 @@
+.onboarding-modal .modal-header {
+    background-color: #FAFBFC;
+    color: #172B4D;
+    border-bottom: 1px solid #eaecef;
+}
+
+.theme-image {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    margin: 20px auto;
+    display: block;
+}
+
+.onboarding-modal .modal-body {
+    background-color: #FAFBFC;
+    color: #172B4D;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.onboarding-modal .modal-body h1 {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.onboarding-modal .modal-body p {
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.onboarding-modal .modal-body ol {
+    padding-left: 20px;
+    margin-bottom: 20px;
+}
+
+.onboarding-modal .modal-footer {
+    background-color: #FAFBFC;
+    border-top: 1px solid #eaecef;
+}
+
+.onboarding-modal .btn-primary {
+    background-color: #0052CC;
+    border-color: #0052CC;
+}
+
+.centered-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%; /* or any specific size you prefer */
+    max-width: 30rem; /* Adjust as needed */
+    height: auto;
+}

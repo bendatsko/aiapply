@@ -1,0 +1,133 @@
+/* General Styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.dashboard-container {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Helps push the footer down */
+}
+
+.dashboard-footer {
+    width: 100%;
+    padding: 20px;
+    background-color: #f0f0f0;
+    text-align: center;
+    border-top: 1px solid #e0e0e0;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Dialog */
+.modal-dialog {
+    max-width: 60%;
+}
+
+/* Content Container */
+.content-container {
+    width: 100%;
+    max-width: 100rem;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Resumes and Templates Sections */
+.resumes-section, .templates-section {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-top: 2.5rem;
+    color: black; /* For templates-section */
+}
+
+/* Resumes Container */
+.resumes-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Resume Card */
+.resume-card {
+    position: relative;
+    height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.resume-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Templates Container */
+.template-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Grid Item Center */
+.grid-item-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    height: 70px;
+}
+
+/* Media Queries */
+
+/* Desktop Screens */
+@media screen and (min-width: 1920px) {
+    .resume-card {
+        flex: 0 0 calc(25% - 20px);
+    }
+}
+
+/* Tablet Screens */
+@media screen and (max-width: 768px) {
+    .resume-card {
+        flex: 0 0 calc(50% - 10px);
+    }
+    .template-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+}
+
+/* Mobile Screens */
+@media screen and (max-width: 600px) {
+    .templates-section h2, .templates-section p, .resumes-section h2 .resumes-section p {
+        text-align: center;
+        width: 100%;
+    }
+    .grid-item-center {
+        flex: 0 0 calc(50% - 10px); /* Adjust the flex-basis and subtract the margin */
+        margin: 5px; /* Adds margin for whitespace */
+    }
+    .template-container, .resumes-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around; /* Adjusts the spacing around items */
+    }
+}
+

@@ -1,0 +1,63 @@
+.template-details-modal .modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.template-details-modal .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.template-modal-content {
+    display: flex;
+    justify-content: space-between;
+}
+
+.template-image-container {
+    width: 50%;
+    text-align: center;
+    margin-right: 10px;
+}
+
+.template-image {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #dee2e6;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.template-details-container {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.template-details-container h3 {
+    margin-top: 0;
+}
+
+.template-description {
+    font-size: 1rem;
+    color: #6c757d;
+    flex-grow: 1;
+}
+
+.template-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.template-details-modal .btn-primary, .template-details-modal .btn-secondary, .btn-danger {
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.template-details-modal .btn:hover {
+    opacity: 0.9;
+}
+
+.template-details-modal .modal-footer {
+    display: none; /* Hide the default footer */
+}
