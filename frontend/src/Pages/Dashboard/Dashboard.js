@@ -1,6 +1,6 @@
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
-import {collection, deleteDoc, doc, getDoc, getDocs, setDoc} from 'firebase/firestore';
+import {collection, query, where, deleteDoc, doc, getDoc, getDocs, setDoc} from 'firebase/firestore';
 
 import {auth, db} from '../../firebase';
 import UserContext from '../../UserContext';
@@ -43,9 +43,7 @@ function Dashboard() {
 
             if (!userDoc.exists()) {
                 await setDoc(userDocRef, {
-                    email: currentUser.email,
-                    displayName: currentUser.displayName,
-                    // other default fields
+                    email: currentUser.email, displayName: currentUser.displayName, // other default fields
                 });
             }
             // else, set the user data into some local state or context
@@ -80,22 +78,16 @@ function Dashboard() {
     const [currentResumePage, setCurrentResumePage] = useState(1);
     const [currentTemplatePage, setCurrentTemplatePage] = useState(1);
     const itemsPerPage = 4; // Display 4 items per page
-    const itemsPerPageResume = 12; 
+    const itemsPerPageResume = 12;
 
 // Calculate total pages for resumes and templates
     const totalPagesResumes = Math.ceil(resumes.length / itemsPerPageResume);
     const totalPagesTemplates = Math.ceil(templates.length / itemsPerPage);
 
     // Get current resumes and templates based on respective current pages
-    const currentResumes = resumes.slice(
-        (currentResumePage - 1) * itemsPerPageResume,
-        currentResumePage * itemsPerPageResume
-    );
+    const currentResumes = resumes.slice((currentResumePage - 1) * itemsPerPageResume, currentResumePage * itemsPerPageResume);
 
-    const currentTemplates = templates.slice(
-        (currentTemplatePage - 1) * itemsPerPage,
-        currentTemplatePage * itemsPerPage
-    );
+    const currentTemplates = templates.slice((currentTemplatePage - 1) * itemsPerPage, currentTemplatePage * itemsPerPage);
 
     console.log('Recently Opened Resumes:', recentlyOpened);
     console.log('Resumes:', resumes);
@@ -105,7 +97,6 @@ function Dashboard() {
     }, []);
 
 
-    
     const openAddResumeModal = useCallback(() => {
         setAddResumeModalOpen(true);
     }, []);
@@ -202,21 +193,25 @@ function Dashboard() {
         // If there are other dependencies that might require a refetch of the templates,
         // add them to the dependency array below.
     }, [user, userId]); // Example dependencies, add or remove based on your requirements
-    
+
 
     // const [resumes, setResumes] = useState([]);
 
 
     const fetchResumeData = async () => {
+        if (!user) return;
+
         const resumesCollectionRef = collection(db, 'resumes');
-        const querySnapshot = await getDocs(resumesCollectionRef);
+        const q = query(resumesCollectionRef, where("userId", "==", user.uid));
+        const querySnapshot = await getDocs(q);
         const fetchedResumes = querySnapshot.docs.map(doc => {
             const resumeData = {...doc.data(), id: doc.id};
-            console.log(`Fetched Resume: ${resumeData.id}`, resumeData);  // Add this line
+            console.log(`Fetched Resume: ${resumeData.id}`, resumeData);
             return resumeData;
         });
         setResumes(fetchedResumes);
     };
+
 
 
     useEffect(() => {
@@ -225,155 +220,144 @@ function Dashboard() {
 
 
     const isAdmin = userData && userData.role === "admin";
+    if (isAdmin) {
+        console.log("USER IS ADMIN");
+    } else {
+        console.log("USER IS NOT ADMIN");
+    }
 
 
     return (
-    
-    <div>
-                        <DashboardNavbar onNewResumeClick={openAddResumeModal} />
+
+        <div>
+            <DashboardNavbar onNewResumeClick={openAddResumeModal}/>
 
 
-        <div className="content-container"> {/* This is the new container div */}
+            <div className="content-container"> {/* This is the new container div */}
 
 
+                <section className="templates-section">
+                    <h2>Community Templates</h2>
+                    {isAdmin && (
+                        <Button variant="primary"
+                                onClick={() => setAddTemplateModalOpen(true)}>
+                            Create New Template
+                        </Button>)}
+                    <p>A collection of ATS-friendly resume templates to start from.</p>
 
 
-        <section className="templates-section">
-                <h2>Templates</h2>
-                <p>A collection of ATS-parseable resume templates to select from.</p>
+                    <Grid container spacing={2}>
+                        {currentTemplates.map((template, index) => {
+                            return (<Grid item xs={12} sm={6} md={3} key={index} className="grid-item-center">
 
-                {userData && userData.role === "admin" && (
-                    <Button className='create-new-resume-btn' variant="primary" onClick={() => setAddTemplateModalOpen(true)}>
-                        Create New Template
-                    </Button>
-                )}
-              <Grid container spacing={2}>
-                {currentTemplates.map((template, index) => {
-                    return (
-                        <Grid item xs={12} sm={6} md={3} key={index} className="grid-item-center">
+                                    <TemplateCard
 
-                            <TemplateCard
-                                imageSrc={template.previewPath}
-                                title={template.title}
-                                description={template.description}
-                                onClick={() => handleTemplateClick(template)}
-                                template={template}
-                            />
-                        </Grid>
-                        
-                        );
-                    })}
-                </Grid>
+                                        imageSrc={template.previewPath}
+                                        title={template.title}
+                                        description={template.description}
+                                        onClick={() => handleTemplateClick(template)}
+                                        template={template}
+                                    />
+                                </Grid>
 
-                {templates.length > 4 && (
+                            );
+                        })}
+                    </Grid>
 
-                <Pagination
-                    count={totalPagesTemplates}
-                    page={currentTemplatePage}
-                    onChange={(event, value) => setCurrentTemplatePage(value)}
-                    color="primary"
-                    
-                /> )}
+                    {templates.length > 4 && (
 
-            </section>
+                        <Pagination
+                            className={"pag"}
+
+                            count={totalPagesTemplates}
+                            page={currentTemplatePage}
+                            onChange={(event, value) => setCurrentTemplatePage(value)}
+                            color="primary"
+
+                        />)}
+
+                </section>
 
 
+                <section className="resumes-section">
+                    <h2 className="resumesHeader">My Resumes</h2>
+                    {/*<p>Your Re.</p>*/}
+
+                    <Grid container spacing={2}>
+                        {currentResumes.map((resume, index) => {
+                            console.log(`Rendering Resume: ${resume.id}`, resume);  // Add this line
+                            return (<Grid item xs={12} sm={6} md={3} key={index} className="grid-item-center">
 
 
+                                    <ResumeCard
+                                        resume={resume}
+                                        title={resume.title}
+                                        userId={userId}
+                                        imageSrc={resume.previewImagePath}
+                                        onClick={() => handleResumeClick(resume)}
+                                    />
+                                </Grid>);
+                        })}
+                    </Grid>
 
 
+                    {resumes.length > 4 && (<Pagination
+                            className={"pag"}
+                            count={totalPagesResumes}
+                            page={currentResumePage}
+                            onChange={(event, value) => setCurrentResumePage(value)}
+                            color="primary"
+
+                        />)}
+
+                </section>
 
 
-
-            <section className="resumes-section">
-                <h2 id="resumesHeader">Resumes</h2>
-                <p>All resumes you have created until this point</p>
-
-                <Grid container spacing={2}>
-                    {currentResumes.map((resume, index) => {
-                        console.log(`Rendering Resume: ${resume.id}`, resume);  // Add this line
-                        return (
-                            <Grid item xs={12} sm={6} md={3} key={index} className="grid-item-center">
-
-
-                                <ResumeCard
-                                    resume={resume}
-                                    title={resume.title}
-                                    userId={userId}
-                                    imageSrc={resume.previewImagePath}
-                                    onClick={() => handleResumeClick(resume)}
-                                />
-                            </Grid>
-                        );
-                    })}
-                </Grid>
-
-
-                {resumes.length > 4 && (
-                    <Pagination
-                        count={totalPagesResumes}
-                        page={currentResumePage}
-                        onChange={(event, value) => setCurrentResumePage(value)}
-                        color="primary"
-                
+                    <ProfilePage
+                        userId={user?.uid}
+                        onProfileUpdated={handleProfileUpdated}
                     />
-                )}
 
-            </section>
-
-
-           
-
-
-            <Modal show={isProfileModalOpen} onHide={closeProfileModal} dialogClassName="profile-modal-dialog">
-                <ProfilePage
-                    userId={user?.uid}
-                    onProfileUpdated={handleProfileUpdated}
-                    onModalClose={closeProfileModal}/>
-
-            </Modal>
-
-            <NewResumeModal
-                isOpen={isAddResumeModalOpen}
-                onClose={() => setAddResumeModalOpen(false)}
-                user={user}
-                fetchResumeData={fetchResumeData}
-                templates={templates} // Pass the templates to the modal
-            />
+                <NewResumeModal
+                    isOpen={isAddResumeModalOpen}
+                    onClose={() => setAddResumeModalOpen(false)}
+                    user={user}
+                    fetchResumeData={fetchResumeData}
+                    templates={templates} // Pass the templates to the modal
+                />
 
 
+                <TemplateDetailsModal
+                    isOpen={selectedTemplate !== null}
+                    onClose={() => setSelectedTemplate(null)}
+                    template={selectedTemplate}
+                    isAdmin={isAdmin}
+                    onTemplateDelete={fetchTemplates}
+                />
 
-            <TemplateDetailsModal
-                isOpen={selectedTemplate !== null}
-                onClose={() => setSelectedTemplate(null)}
-                template={selectedTemplate}
-                isAdmin = {isAdmin}
-                onTemplateDelete={fetchTemplates}
-            />
+                <OnboardingModal isOpen={isOnboardingModalOpen} onClose={closeOnboardingModal}/>
 
-            <OnboardingModal isOpen={isOnboardingModalOpen} onClose={closeOnboardingModal}/>
+                <ResumeDetailsModal
+                    isOpen={isViewResumeModalOpen}
+                    onClose={() => setViewResumeModalOpen(false)}
+                    resume={selectedResume}
+                    deleteResume={deleteResume}
+                />
 
-            <ResumeDetailsModal
-                isOpen={isViewResumeModalOpen}
-                onClose={() => setViewResumeModalOpen(false)}
-                resume={selectedResume}
-                deleteResume={deleteResume}
-            />
+                <AddTemplateModal
+                    isOpen={isAddTemplateModalOpen}
+                    onClose={() => setAddTemplateModalOpen(false)}
+                    onAddSuccess={fetchTemplates} // Callback on successful add
+                    user={user} // Pass the current user
+                />
 
-            <AddTemplateModal
-                isOpen={isAddTemplateModalOpen}
-                onClose={() => setAddTemplateModalOpen(false)}
-                onAddSuccess={fetchTemplates} // Callback on successful add
-                user={user} // Pass the current user
-            />
+            </div>
 
-        </div>
-
-        {/* Footer */}
-        <footer className="dashboard-footer">
-            <p>© 2023 AiApply. All rights reserved.</p>
-        </footer>
-    </div>);
+            {/* Footer */}
+            <footer className="dashboard-footer">
+                <p>© 2023 AiApply. All rights reserved.</p>
+            </footer>
+        </div>);
 }
 
 export default Dashboard;

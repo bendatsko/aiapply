@@ -4,7 +4,7 @@
 }
 
 .logo {
-  height: 40px;
+  height: 3.25rem;
   width: auto;
 }
 
@@ -19,7 +19,7 @@
   border-radius: 6px; /* Reduced rounding */
   border: none; /* Removing default border */
   padding: .375rem .75rem; /* Adjusted padding to match the text size of the login link */
-  margin-left: 2rem;
+  margin-right: 1rem;
 }
 
 .btn-get-started:hover {

@@ -13,6 +13,13 @@
     justify-content: space-between;
 }
 
+.update-profile-button {
+    background-color: #344563;
+    border: none;
+    color: white;
+}
+
+
 .template-image-container {
     width: 50%;
     text-align: center;
@@ -60,4 +67,29 @@
 
 .template-details-modal .modal-footer {
     display: none; /* Hide the default footer */
+}
+
+
+
+.job-posting-container {
+    max-height: 150px; /* Adjust this value as needed */
+    overflow-y: auto; /* Adds a vertical scrollbar when content overflows */
+    margin-bottom: 15px;
+    padding: 5px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.job-posting-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.job-posting-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.job-posting-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

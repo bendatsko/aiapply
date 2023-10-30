@@ -17,7 +17,7 @@ body, html {
 .dashboard-footer {
     width: 100%;
     padding: 20px;
-    background-color: #f0f0f0;
+    background-color: rgba(241, 241, 241, 0.55);
     text-align: center;
     border-top: 1px solid #e0e0e0;
     box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
@@ -30,8 +30,7 @@ body, html {
 
 /* Content Container */
 .content-container {
-    width: 100%;
-    max-width: 100rem;
+    width: 80%;
     margin: 0 auto;
     padding: 0 20px;
 }
@@ -53,6 +52,10 @@ body, html {
     gap: 10px;
 }
 
+.resumes-section {
+    margin-bottom: 4rem;
+}
+
 /* Resume Card */
 .resume-card {
     position: relative;
@@ -72,11 +75,12 @@ body, html {
 /* Templates Container */
 .template-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); /* Adjusted for a minimum width of 20rem */
     gap: 20px;
     justify-content: center;
     padding: 20px;
 }
+
 
 /* Grid Item Center */
 .grid-item-center {
@@ -114,9 +118,19 @@ body, html {
     }
 }
 
+
+.navbar-toggler-icon {
+    color: #0052CC;
+}
+
+
 /* Mobile Screens */
-@media screen and (max-width: 600px) {
-    .templates-section h2, .templates-section p, .resumes-section h2 .resumes-section p {
+@media screen and (max-width: 800px) {
+    .templates-section h2, .templates-section p {
+        text-align: center;
+        width: 100%;
+    }
+    .resumesHeader {
         text-align: center;
         width: 100%;
     }
@@ -129,5 +143,33 @@ body, html {
         flex-wrap: wrap;
         justify-content: space-around; /* Adjusts the spacing around items */
     }
+}
+
+/* Responsive Adjustments */
+@media screen and (max-width: 1200px) {
+    .template-container {
+        grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); /* Smaller min-width for smaller screens */
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .template-container {
+        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr)); /* Even smaller min-width for mobile screens */
+    }
+}
+
+
+.MuiPaginationItem-root {
+    color: #757575; /* Muted text color */
+    border: 1px solid #ccc; /* Border color */
+}
+
+.MuiPaginationItem-root.Mui-selected {
+    background-color: #344563 !important; /* Background color for selected page */
+    color: white;
+}
+
+.MuiPaginationItem-root:hover {
+    background-color: #a1a1a1; /* Hover background color */
 }
 

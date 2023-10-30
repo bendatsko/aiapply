@@ -17,7 +17,7 @@ function TemplateCard({imageSrc, title, description, onClick, resumeTitle, templ
                     }}
                 />
             </div>
-            <p>{template.title}</p>
+            <p><b>{template.title}</b></p>
         </div>
     );
 }

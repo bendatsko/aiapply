@@ -74,12 +74,12 @@ function DashboardNavbar({ onNewResumeClick }) {
         )}
       </div>
 
-      <Modal show={isProfileModalOpen} onHide={closeProfileModal} dialogClassName="profile-modal-dialog">
-        <ProfilePage userId={user?.uid} onProfileUpdated={handleProfileUpdated} onModalClose={closeProfileModal} />
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeProfileModal}>Close</Button>
-        </Modal.Footer>
-      </Modal>
+        <ProfilePage
+            userId={user?.uid}
+            isProfileModalOpen = {isProfileModalOpen}
+            onProfileUpdated={handleProfileUpdated}
+            onModalClose={closeProfileModal} />
+
 
       <Modal show={isAdminModalOpen} onHide={closeAdminModal} dialogClassName="admin-modal-dialog">
         <AdminPanel onClose={closeAdminModal} />

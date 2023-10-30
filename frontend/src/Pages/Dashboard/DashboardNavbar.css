@@ -4,6 +4,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     background-color: #FFFFFF;
     padding: 0 1rem;
+    font-size: 1rem;
 }
 
 /* Navigation Container */
@@ -18,7 +19,7 @@
 
 /* Logo Styles */
 .logo {
-    height: 3.5rem;
+    height: 3.25rem;
     width: auto;
 }
 
@@ -50,33 +51,36 @@
 }
 
 .primary-btn {
-    background-color: #000;
+    background-color: #344563;
     color: #fff;
+    font-size: 1rem;
 }
 
 .primary-btn:hover {
-    background-color: #000000a4;
+    background-color: rgba(52, 69, 99, 0.94);
 }
+
 /* Providing a visual feedback on click and hold */
 .primary-btn:active {
-    color: black !important; 
+    color: black !important;
     background-color: rgba(0, 0, 0, 0.075) !important; /* Ensures override of any other style */
 }
 
 
 .secondary-btn {
+    font-size: 1rem;
     color: #000;
     background-color: transparent;
 }
 
 .secondary-btn:hover {
-    color: black !important; 
+    color: black !important;
     background-color: rgba(0, 0, 0, 0.025) !important; /* Ensures override of any other style */
 }
 
 /* Providing a visual feedback on click and hold for secondary buttons */
 .secondary-btn:active {
-    color: black !important; 
+    color: black !important;
     background-color: rgba(0, 0, 0, 0.075) !important; /* Ensures override of any other style */
 }
 
@@ -86,13 +90,12 @@
     align-items: center;
 }
 
-/* Hamburger Menu Styles */
 .navbar-toggler {
     border: none;
 }
 
 /* Responsive Adjustments */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .dashboard-navbar {
         /* Adjust the navbar height dynamically */
         height: auto;
@@ -102,7 +105,6 @@
 
     .navbar-collapse {
         background-color: #FFFFFF; /* Matching the navbar's background */
-        
     }
 
     .navbar-nav .nav-link {

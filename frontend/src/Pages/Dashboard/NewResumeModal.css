@@ -14,6 +14,17 @@ body {
     width: 100%; /* Set the width to 100% of the modal */
 }
 
+.profile-button {
+    margin-top: 10px;
+    display: inline-block;
+    border-radius: 8px;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    transition: background-color 0.2s, color 0.2s;
+    cursor: pointer;
+}
+
 .profile-section {
     margin-bottom: 20px;
 }
@@ -28,6 +39,9 @@ body {
 .profile-close-button:hover {
     color: black;
     background-color: #e0e0e2; /* Slightly darker gray */
+
+
+
 }
 
 /* Tabbed Interface */
@@ -113,20 +127,32 @@ body {
     background-color: #e0e0e2; /* Slightly darker gray */
 }
 
-.update-profile-button {
+
+
+.generateResumeButton {
     background-color: #344563;
     border: none;
     color: white;
 }
 
 
-.update-profile-button:hover, .update-profile-button:active {
+.generateResumeButton:hover, .generateResumeButton:active {
     background-color: rgba(52, 69, 99, 0.94);
 }
 
+.closeButton {
+    color: black;
+    background-color: rgba(25, 48, 75, 0); /* Apple's blue */
+    border: none;
 
+}
 
-    /* Modal Styling */
+.closeButton:hover {
+    color: black;
+    background-color: #e0e0e2; /* Slightly darker gray */
+}
+
+/* Modal Styling */
 .modal-header, .modal-footer {
     border-color: #d1d1d6;
 }

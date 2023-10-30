@@ -12,8 +12,9 @@ function Navbar() {
           </Link>
 
           <div className="ml-auto d-flex align-items-center">
-            <Link className="nav-link custom-login-link mr-2" to="/login">Login</Link> {/* Added margin to the right of the login text */}
-            <Link className="btn btn-get-started" to="/about">Learn More</Link>
+            {/*<Link className="btn btn-get-started" to="/about">Learn More</Link>*/}
+              <Link className="nav-link custom-login-link mr-2" to="/login">Login</Link> {/* Added margin to the right of the login text */}
+
           </div>
         </div>
       </nav>

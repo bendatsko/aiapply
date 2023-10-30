@@ -1,8 +1,9 @@
-.onboarding-modal .modal-header {
-    background-color: #FAFBFC;
-    color: #172B4D;
-    border-bottom: 1px solid #eaecef;
+/* Ensure the modal takes the full available width on smaller screens */
+.onboarding-modal {
+    width: 100%;
 }
+
+
 
 .theme-image {
     width: 100%;
@@ -12,10 +13,19 @@
     display: block;
 }
 
+
 .onboarding-modal .modal-body {
     background-color: #FAFBFC;
     color: #172B4D;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal-container {
+    display: flex;
+    align-items: center; /* Vertical centering */
+    justify-content: center; /* Horizontal centering */
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
 }
 
 .onboarding-modal .modal-body h1 {
@@ -52,4 +62,12 @@
     width: 100%; /* or any specific size you prefer */
     max-width: 30rem; /* Adjust as needed */
     height: auto;
+}
+
+/* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+
+    .modal-dialog {
+        max-width: 100%;
+    }
 }
